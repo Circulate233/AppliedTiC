@@ -1,0 +1,11 @@
+{
+  "package": "com.circulation.applied_tic.mixins.tic",
+  "refmap": "mixins.applied_tic.refmap.json",
+  "target": "@env(DEFAULT)",
+  "minVersion": "0.8",
+  "compatibilityLevel": "JAVA_8",
+  "client": [
+    "MixinToolForgeGui",
+    "MixinToolStationGui"
+  ]
+}

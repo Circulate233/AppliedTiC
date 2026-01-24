@@ -1,0 +1,2 @@
+tool.ticstoragecell=TiC存储元件
+tool.ticstoragecell.desc=TiC存储元件是一种可自定义的ME存储元件。\n\n需求部件:\n- 存储外壳\n- 存储核心\n\n可以通过强化来影响类型占用的字节比例与每字节可存储的物品。

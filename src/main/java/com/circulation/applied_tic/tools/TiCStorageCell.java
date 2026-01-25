@@ -28,9 +28,12 @@ import appeng.util.Platform;
 import appeng.util.item.ItemList;
 import appeng.util.prioitylist.FuzzyPriorityList;
 import com.circulation.applied_tic.handler.StorageHandler;
+import com.circulation.applied_tic.registry.ItemRegistry;
 import com.circulation.applied_tic.utils.TiCCellHandler;
+import com.mojang.authlib.GameProfile;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import iguanaman.iguanatweakstconstruct.leveling.LevelingLogic;
 import lombok.Getter;
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.GuiScreen;
@@ -45,8 +48,10 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.World;
+import net.minecraftforge.common.DimensionManager;
+import net.minecraftforge.common.util.FakePlayer;
+import net.minecraftforge.common.util.FakePlayerFactory;
 import tconstruct.library.tools.ToolCore;
-import tconstruct.tools.TinkerTools;
 
 import javax.annotation.Nullable;
 import java.text.NumberFormat;
@@ -61,6 +66,8 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
 
     public static final TiCStorageCell INSTANCE = new TiCStorageCell();
     private static final Handler handler = new Handler();
+    @Getter(lazy = true)
+    private static final FakePlayer fakePlayer = FakePlayerFactory.get(DimensionManager.getWorld(0), new GameProfile(UUID.fromString("CC1F4976-9C89-4AD4-BFA1-AD167F9B2D4F"), "[AppliedTiCCell]"));
 
     public TiCStorageCell() {
         super(1000);
@@ -186,7 +193,8 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
                 NumberFormat nf = NumberFormat.getNumberInstance();
                 if (cellInventory.restrictionLong != 0)
                     lines.add(GuiText.MaxItems.getLocal() + " " + nf.format(cellInventory.restrictionLong));
-                if (cellInventory.restrictionTypes != 0) lines.add(GuiText.MaxTypes.getLocal() + " " + cellInventory.restrictionTypes);
+                if (cellInventory.restrictionTypes != 0)
+                    lines.add(GuiText.MaxTypes.getLocal() + " " + cellInventory.restrictionTypes);
             }
         }
         if (stack.hasTagCompound() && stack.getTagCompound().hasKey("uuid")) {
@@ -214,10 +222,9 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
         return "me_cell";
     }
 
-    //TODO:
     @Override
     public Item getHeadItem() {
-        return TinkerTools.hatchetHead;
+        return ItemRegistry.housing;
     }
 
     @Override
@@ -227,7 +234,7 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
 
     @Override
     public Item getHandleItem() {
-        return super.getHandleItem();
+        return ItemRegistry.core;
     }
 
     @Override
@@ -446,7 +453,7 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
         }
 
         // TODO:每多少物品占用的字节数目
-        private int getItemByteConsumption() {
+        private long getItemByteConsumption() {
             return 8;
         }
 
@@ -691,6 +698,7 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
                     if (mode == Actionable.MODULATE) {
                         l.setStackSize(l.getStackSize() + remainingItemSlots);
                         this.updateItemCount(remainingItemSlots);
+                        this.addXP(remainingItemSlots);
                         this.saveChanges();
                     }
 
@@ -699,6 +707,7 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
                     if (mode == Actionable.MODULATE) {
                         l.setStackSize(l.getStackSize() + input.getStackSize());
                         this.updateItemCount(input.getStackSize());
+                        this.addXP(input.getStackSize());
                         this.saveChanges();
                     }
 
@@ -731,6 +740,7 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
 
                             this.cellItems.add(toWrite);
                             this.updateItemCount(toWrite.getStackSize());
+                            this.addXP(remainingItemCount);
                             this.saveChanges();
                         }
                         return toReturn;
@@ -739,6 +749,7 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
                     if (mode == Actionable.MODULATE) {
                         this.updateItemCount(input.getStackSize());
                         this.cellItems.add(input);
+                        this.addXP(input.getStackSize());
                         this.saveChanges();
                     }
 
@@ -771,6 +782,7 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
 
                     if (mode == Actionable.MODULATE) {
                         this.updateItemCount(-l.getStackSize());
+                        this.addXP(l.getStackSize());
                         l.setStackSize(0);
                         this.saveChanges();
                     }
@@ -780,6 +792,7 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
                     if (mode == Actionable.MODULATE) {
                         l.setStackSize(l.getStackSize() - size);
                         this.updateItemCount(-size);
+                        this.addXP(size);
                         this.saveChanges();
                     }
                 }
@@ -791,6 +804,15 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
         @Override
         public StorageChannel getChannel() {
             return StorageChannel.ITEMS;
+        }
+
+        private long size = 0;
+
+        private void addXP(long stackSize) {
+            size += stackSize;
+            if (size / 8 > 0)
+                LevelingLogic.addXP(cellItem, getFakePlayer(), size / 8);
+            size %= 8;
         }
     }
 }

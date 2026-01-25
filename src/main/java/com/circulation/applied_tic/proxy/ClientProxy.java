@@ -10,7 +10,7 @@ import net.minecraftforge.client.MinecraftForgeClient;
 import tconstruct.client.FlexibleToolRenderer;
 import tconstruct.library.client.TConstructClientRegistry;
 
-public class ClientProxy extends CommonProxy {
+public final class ClientProxy extends CommonProxy {
 
     @Override
     public void preInit(FMLPreInitializationEvent event) {

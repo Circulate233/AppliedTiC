@@ -23,7 +23,7 @@ public class LateMixinLoader implements ILateMixinLoader {
 
     static {
         addMixinCFG("mixins.applied_tic.json");
-
+        addModdedMixinCFG("mixins.applied_tic.IguanaTweaksTConstruct.json", "IguanaTweaksTConstruct");
     }
 
     private static boolean modLoaded(final String modID) {

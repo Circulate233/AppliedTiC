@@ -21,12 +21,16 @@ import java.io.IOException;
 import java.nio.file.Files;
 
 @SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
-public class StorageHandler {
+public final class StorageHandler {
 
     public static final StorageHandler INSTANCE = new StorageHandler();
     private static final Object2ObjectMap<String, BooleanObjectPair<IItemList<IAEItemStack>>> cellItemsManager = new Object2ObjectOpenHashMap<>();
     public static boolean canSave;
     private static File cellsFlie;
+
+    private StorageHandler() {
+
+    }
 
     public static File getCellsFlie() {
         if (cellsFlie == null) {

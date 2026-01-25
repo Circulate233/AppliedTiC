@@ -27,6 +27,7 @@ import appeng.util.IterationCounter;
 import appeng.util.Platform;
 import appeng.util.item.ItemList;
 import appeng.util.prioitylist.FuzzyPriorityList;
+import com.circulation.applied_tic.handler.StorageHandler;
 import com.circulation.applied_tic.handler.TiCCellHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -53,6 +54,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 
 import static appeng.me.storage.CellInventory.getCell;
 
@@ -62,7 +64,7 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
     private static final Handler handler = new Handler();
 
     public TiCStorageCell() {
-        super(1024);
+        super(1000);
     }
 
     public static TiCCellHandler getCellHandler() {
@@ -113,7 +115,7 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
                 + GuiText.Of.getLocal()
                 + " "
                 + EnumChatFormatting.DARK_GREEN
-                + NumberFormat.getInstance().format(cellInventory.getTotalBytes())
+                + NumberFormat.getInstance().format(cellInventory.getBytesLong())
                 + " "
                 + EnumChatFormatting.GRAY
                 + GuiText.BytesUsed.getLocal());
@@ -188,6 +190,9 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
                     lines.add(GuiText.MaxItems.getLocal() + " " + nf.format((long) restricted.get(0)));
                 if ((byte) restricted.get(1) != 0) lines.add(GuiText.MaxTypes.getLocal() + " " + restricted.get(1));
             }
+        }
+        if (stack.hasTagCompound() && stack.getTagCompound().hasKey("uuid")) {
+            lines.add(EnumChatFormatting.GRAY + "UUID: " + stack.getTagCompound().getString("uuid"));
         }
     }
 
@@ -276,10 +281,11 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
         return 0;
     }
 
-    // TODO:容量
     @Override
     public long getBytesLong(ItemStack cellItem) {
-        return IStorageCell.super.getBytesLong(cellItem);
+        return Platform.openNbtData(cellItem)
+                       .getCompoundTag("InfiTool")
+                       .getInteger("TotalDurability") * 1024L;
     }
 
     @Override
@@ -296,7 +302,7 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
     // TODO:最大类型？
     @Override
     public int getTotalTypes(ItemStack cellItem) {
-        return 0;
+        return damageVsEntity;
     }
 
     @Override
@@ -334,7 +340,10 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
         @Override
         public InventoryHandler getCellInventory(ItemStack is, ISaveProvider host,
                                                  StorageChannel channel) {
-            return new InventoryHandler(new Inventory(is), StorageChannel.ITEMS);
+            if (channel == StorageChannel.ITEMS) {
+                return new InventoryHandler(new Inventory(is), channel);
+            }
+            return null;
         }
 
         @Override
@@ -419,8 +428,8 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
             try {
                 final Item type = itemStack.getItem();
 
-                if (type instanceof IStorageCell) {
-                    return !((IStorageCell) type).storableInStorageCell();
+                if (type instanceof IStorageCell c) {
+                    return !c.storableInStorageCell();
                 }
             } catch (final Throwable err) {
                 return true;
@@ -479,6 +488,10 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
 
         public int getBytesPerType() {
             return TiCStorageCell.INSTANCE.getBytesPerType(cellItem);
+        }
+
+        public long getBytesLong() {
+            return TiCStorageCell.INSTANCE.getBytesLong(cellItem);
         }
 
         public long getRemainingItemsCountDist(IAEItemStack l) {
@@ -562,14 +575,11 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
 
         private void loadCellItems() {
             if (this.cellItems == null) {
-                this.cellItems = AEApi.instance()
-                                      .storage()
-                                      .createPrimitiveItemList();
+                if (!tagCompound.hasKey("uuid")) {
+                    tagCompound.setString("uuid", UUID.randomUUID().toString());
+                }
+                this.cellItems = StorageHandler.loadList(tagCompound.getString("uuid"));
             }
-
-            this.cellItems.resetStatus(); // clears totals and stuff.
-
-            // TODO:应当基于UUID识别库存并且读取
 
             if (this.cellItems.size() != storedItemTypes) {
                 // fix broken singularity cells
@@ -599,11 +609,15 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
                 this.tagCompound.setLong(ITEM_COUNT_TAG, storedItemCount);
             }
 
-            // TODO:应当基于UUID识别库存并且保存而不是保存为NBT在物品上
+            if (!tagCompound.hasKey("uuid")) {
+                tagCompound.setString("uuid", UUID.randomUUID().toString());
+            }
+
+            StorageHandler.saveList(tagCompound.getString("uuid"));
         }
 
         public long getRemainingItemTypes() {
-            final long basedOnStorage = this.getFreeBytes() / this.getBytesPerType();
+            final long basedOnStorage = this.getBytesPerType() == 0 ? Integer.MAX_VALUE : this.getFreeBytes() / this.getBytesPerType();
             final long baseOnTotal = this.getTotalItemTypes() - this.getStoredItemTypes();
 
             return Math.min(basedOnStorage, baseOnTotal);

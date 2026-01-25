@@ -2,6 +2,7 @@ package com.circulation.applied_tic.handler;
 
 import appeng.api.storage.ICellHandler;
 import appeng.api.storage.IMEInventory;
+import appeng.client.texture.ExtraBlockTextures;
 import com.circulation.applied_tic.tools.TiCStorageCell;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
@@ -21,17 +22,17 @@ public abstract class TiCCellHandler implements ICellHandler {
 
     @Override
     public IIcon getTopTexture_Light() {
-        return null;
+        return ExtraBlockTextures.BlockMEChestItems_Light.getIcon();
     }
 
     @Override
     public IIcon getTopTexture_Medium() {
-        return null;
+        return ExtraBlockTextures.BlockMEChestItems_Medium.getIcon();
     }
 
     @Override
     public IIcon getTopTexture_Dark() {
-        return null;
+        return ExtraBlockTextures.BlockMEChestItems_Dark.getIcon();
     }
 
     @Override

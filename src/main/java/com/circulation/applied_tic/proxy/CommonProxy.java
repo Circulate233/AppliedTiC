@@ -2,11 +2,13 @@ package com.circulation.applied_tic.proxy;
 
 import appeng.api.AEApi;
 import com.circulation.applied_tic.Config;
+import com.circulation.applied_tic.handler.StorageHandler;
 import com.circulation.applied_tic.registry.ItemRegistry;
 import com.circulation.applied_tic.tools.TiCStorageCell;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.common.MinecraftForge;
 import tconstruct.library.TConstructRegistry;
 
 import static com.circulation.applied_tic.registry.ItemRegistry.itemCell;
@@ -32,6 +34,6 @@ public class CommonProxy {
     }
 
     public void postInit(FMLPostInitializationEvent event) {
-
+        MinecraftForge.EVENT_BUS.register(StorageHandler.INSTANCE);
     }
 }

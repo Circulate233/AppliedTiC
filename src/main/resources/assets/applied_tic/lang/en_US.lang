@@ -1,5 +1,5 @@
 tool.ticstoragecell=TiC Storage Cell
-tool.ticstoragecell.desc=TiC存储元件是一种可自定义的ME存储元件。\n\n需求部件:\n- 存储外壳\n- 存储核心\n\n可以通过强化来影响类型占用的字节比例与每字节可存储的物品。
+tool.ticstoragecell.desc=The TiC Storage Cell is a customizable ME storage cell.\n\nRequired Components:\n- Storage Housing\n- Storage Core\n\nUpgrades can be applied to adjust the byte ratio per type and the number of items stored per byte.
 
-toolpart.core=%%material存储核心
-toolpart.housing=%%material存储外壳
+toolpart.core=%%material Storage Core
+toolpart.housing=%%material Storage Housing

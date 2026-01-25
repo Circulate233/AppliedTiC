@@ -1,11 +1,5 @@
 package com.circulation.applied_tic.mixins;
 
-import cpw.mods.fml.common.Loader;
-import io.github.tox1cozz.mixinbooterlegacy.ILateMixinLoader;
-import io.github.tox1cozz.mixinbooterlegacy.LateMixin;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -13,7 +7,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BooleanSupplier;
 
-@SuppressWarnings({"unused", "SameParameterValue"})
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import cpw.mods.fml.common.Loader;
+import io.github.tox1cozz.mixinbooterlegacy.ILateMixinLoader;
+import io.github.tox1cozz.mixinbooterlegacy.LateMixin;
+
+@SuppressWarnings({ "unused", "SameParameterValue" })
 @LateMixin
 public class LateMixinLoader implements ILateMixinLoader {
 
@@ -35,7 +36,10 @@ public class LateMixinLoader implements ILateMixinLoader {
     }
 
     private static void addModdedMixinCFG(final String mixinConfig, final String modID, final String... modIDs) {
-        MIXIN_CONFIGS.put(mixinConfig, () -> modLoaded(modID) && Arrays.stream(modIDs).allMatch(Loader::isModLoaded));
+        MIXIN_CONFIGS.put(
+            mixinConfig,
+            () -> modLoaded(modID) && Arrays.stream(modIDs)
+                .allMatch(Loader::isModLoaded));
     }
 
     private static void addMixinCFG(final String mixinConfig) {

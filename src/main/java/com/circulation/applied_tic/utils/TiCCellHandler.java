@@ -1,11 +1,13 @@
 package com.circulation.applied_tic.utils;
 
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.IIcon;
+
+import com.circulation.applied_tic.tools.TiCStorageCell;
+
 import appeng.api.storage.ICellHandler;
 import appeng.api.storage.IMEInventory;
 import appeng.client.texture.ExtraBlockTextures;
-import com.circulation.applied_tic.tools.TiCStorageCell;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.IIcon;
 
 public abstract class TiCCellHandler implements ICellHandler {
 

@@ -1,14 +1,9 @@
 package com.circulation.applied_tic.handler;
 
-import appeng.api.AEApi;
-import appeng.api.storage.data.IAEItemStack;
-import appeng.api.storage.data.IItemList;
-import appeng.util.item.AEItemStack;
-import com.circulation.applied_tic.AppliedTiC;
-import it.unimi.dsi.fastutil.booleans.BooleanObjectMutablePair;
-import it.unimi.dsi.fastutil.booleans.BooleanObjectPair;
-import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -16,9 +11,16 @@ import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.event.world.WorldEvent;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
+import com.circulation.applied_tic.AppliedTiC;
+
+import appeng.api.AEApi;
+import appeng.api.storage.data.IAEItemStack;
+import appeng.api.storage.data.IItemList;
+import appeng.util.item.AEItemStack;
+import it.unimi.dsi.fastutil.booleans.BooleanObjectMutablePair;
+import it.unimi.dsi.fastutil.booleans.BooleanObjectPair;
+import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 @SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
 public final class StorageHandler {
@@ -34,7 +36,12 @@ public final class StorageHandler {
 
     public static File getCellsFlie() {
         if (cellsFlie == null) {
-            var path = DimensionManager.getWorld(0).getSaveHandler().getWorldDirectory().toPath().resolve(AppliedTiC.MODID).resolve("tic_cells");
+            var path = DimensionManager.getWorld(0)
+                .getSaveHandler()
+                .getWorldDirectory()
+                .toPath()
+                .resolve(AppliedTiC.MODID)
+                .resolve("tic_cells");
             try {
                 Files.createDirectories(path);
             } catch (IOException ignored) {
@@ -51,10 +58,13 @@ public final class StorageHandler {
         if (cellItemsPair == null) {
             synchronized (cellItemsManager) {
                 if ((cellItemsPair = cellItemsManager.get(uuid)) == null) {
-                    cellItemsManager.put(uuid,
+                    cellItemsManager.put(
+                        uuid,
                         cellItemsPair = BooleanObjectMutablePair.of(
-                            false, AEApi.instance().storage().createPrimitiveItemList())
-                    );
+                            false,
+                            AEApi.instance()
+                                .storage()
+                                .createPrimitiveItemList()));
                 }
             }
         }
@@ -83,7 +93,8 @@ public final class StorageHandler {
     }
 
     public static void saveList(String uuid) {
-        cellItemsManager.get(uuid).left(true);
+        cellItemsManager.get(uuid)
+            .left(true);
         canSave = true;
     }
 

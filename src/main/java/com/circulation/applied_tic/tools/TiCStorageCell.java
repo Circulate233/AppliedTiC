@@ -1,5 +1,37 @@
 package com.circulation.applied_tic.tools;
 
+import static appeng.me.storage.CellInventory.getCell;
+
+import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.UUID;
+
+import javax.annotation.Nullable;
+
+import net.minecraft.block.Block;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.world.World;
+import net.minecraftforge.common.DimensionManager;
+import net.minecraftforge.common.util.FakePlayer;
+import net.minecraftforge.common.util.FakePlayerFactory;
+
+import com.circulation.applied_tic.handler.StorageHandler;
+import com.circulation.applied_tic.registry.ItemRegistry;
+import com.circulation.applied_tic.utils.TiCCellHandler;
+import com.mojang.authlib.GameProfile;
+
 import appeng.api.AEApi;
 import appeng.api.config.Actionable;
 import appeng.api.config.FuzzyMode;
@@ -27,47 +59,21 @@ import appeng.util.IterationCounter;
 import appeng.util.Platform;
 import appeng.util.item.ItemList;
 import appeng.util.prioitylist.FuzzyPriorityList;
-import com.circulation.applied_tic.handler.StorageHandler;
-import com.circulation.applied_tic.registry.ItemRegistry;
-import com.circulation.applied_tic.utils.TiCCellHandler;
-import com.mojang.authlib.GameProfile;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import iguanaman.iguanatweakstconstruct.leveling.LevelingLogic;
 import lombok.Getter;
-import net.minecraft.block.Block;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.world.World;
-import net.minecraftforge.common.DimensionManager;
-import net.minecraftforge.common.util.FakePlayer;
-import net.minecraftforge.common.util.FakePlayerFactory;
 import tconstruct.library.tools.ToolCore;
-
-import javax.annotation.Nullable;
-import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.UUID;
-
-import static appeng.me.storage.CellInventory.getCell;
 
 public class TiCStorageCell extends ToolCore implements IStorageCell {
 
+    public static long BYTES_PER_DURABILITY = 1024L;
     public static final TiCStorageCell INSTANCE = new TiCStorageCell();
     private static final Handler handler = new Handler();
     @Getter(lazy = true)
-    private static final FakePlayer fakePlayer = FakePlayerFactory.get(DimensionManager.getWorld(0), new GameProfile(UUID.fromString("CC1F4976-9C89-4AD4-BFA1-AD167F9B2D4F"), "[AppliedTiCCell]"));
+    private static final FakePlayer fakePlayer = FakePlayerFactory.get(
+        DimensionManager.getWorld(0),
+        new GameProfile(UUID.fromString("CC1F4976-9C89-4AD4-BFA1-AD167F9B2D4F"), "[AppliedTiCCell]"));
 
     public TiCStorageCell() {
         super(1000);
@@ -94,7 +100,7 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
 
     @Override
     public boolean onBlockDestroyed(ItemStack itemstack, World world, Block block, int x, int y, int z,
-                                    EntityLivingBase player) {
+        EntityLivingBase player) {
         return false;
     }
 
@@ -106,7 +112,10 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
     @Override
     @SideOnly(Side.CLIENT)
     public void addInformation(ItemStack stack, EntityPlayer player, List<String> lines, boolean advanced) {
-        final var inventory = AEApi.instance().registries().cell().getCellInventory(stack, null, StorageChannel.ITEMS);
+        final var inventory = AEApi.instance()
+            .registries()
+            .cell()
+            .getCellInventory(stack, null, StorageChannel.ITEMS);
 
         if (!(inventory instanceof InventoryHandler cellHandler)) {
             return;
@@ -115,33 +124,37 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
         final var cellInventory = cellHandler.inventory;
 
         lines.add(
-            EnumChatFormatting.WHITE + NumberFormat.getInstance(Locale.ENGLISH).format(cellInventory.getUsedBytes())
+            EnumChatFormatting.WHITE + NumberFormat.getInstance(Locale.ENGLISH)
+                .format(cellInventory.getUsedBytes())
                 + EnumChatFormatting.GRAY
                 + " "
                 + GuiText.Of.getLocal()
                 + " "
                 + EnumChatFormatting.DARK_GREEN
-                + NumberFormat.getInstance().format(cellInventory.getBytesLong())
+                + NumberFormat.getInstance()
+                    .format(cellInventory.getBytesLong())
                 + " "
                 + EnumChatFormatting.GRAY
                 + GuiText.BytesUsed.getLocal());
 
         lines.add(
-            EnumChatFormatting.WHITE
-                + NumberFormat.getInstance(Locale.ENGLISH).format(cellInventory.getStoredItemTypes())
+            EnumChatFormatting.WHITE + NumberFormat.getInstance(Locale.ENGLISH)
+                .format(cellInventory.getStoredItemTypes())
                 + EnumChatFormatting.GRAY
                 + " "
                 + GuiText.Of.getLocal()
                 + " "
                 + EnumChatFormatting.DARK_GREEN
-                + NumberFormat.getInstance().format(cellInventory.getTotalBytes())
+                + NumberFormat.getInstance()
+                    .format(cellInventory.getTotalBytes())
                 + " "
                 + EnumChatFormatting.GRAY
                 + GuiText.Types.getLocal());
 
         if (cellInventory.getTotalItemTypes() == 1 && cellInventory.getStoredItemTypes() != 0) {
             ItemStack itemStack = cellInventory.getAvailableItems(new ItemList(), IterationCounter.fetchNewId())
-                                               .getFirstItem().getItemStack();
+                .getFirstItem()
+                .getItemStack();
             lines.add(GuiText.Contains.getLocal() + ": " + itemStack.getDisplayName());
         }
 
@@ -159,8 +172,10 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
                 if (GuiScreen.isShiftKeyDown()) {
                     int usedFilters = 0;
                     ArrayList<String> filtersTexts = new ArrayList<>();
-                    for (int i = 0; i < cellInventory.getConfigInventory().getSizeInventory(); ++i) {
-                        ItemStack s = cellInventory.getConfigInventory().getStackInSlot(i);
+                    for (int i = 0; i < cellInventory.getConfigInventory()
+                        .getSizeInventory(); ++i) {
+                        ItemStack s = cellInventory.getConfigInventory()
+                            .getStackInSlot(i);
                         if (s != null) {
                             usedFilters++;
                             filtersTexts.add(s.getDisplayName());
@@ -170,7 +185,8 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
                         GuiText.Filter.getLocal() + " ("
                             + usedFilters
                             + "/"
-                            + cellInventory.getConfigInventory().getSizeInventory()
+                            + cellInventory.getConfigInventory()
+                                .getSizeInventory()
                             + ")"
                             + ": ");
 
@@ -197,8 +213,12 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
                     lines.add(GuiText.MaxTypes.getLocal() + " " + cellInventory.restrictionTypes);
             }
         }
-        if (stack.hasTagCompound() && stack.getTagCompound().hasKey("uuid")) {
-            lines.add(EnumChatFormatting.GRAY + "UUID: " + stack.getTagCompound().getString("uuid"));
+        if (stack.hasTagCompound() && stack.getTagCompound()
+            .hasKey("uuid")) {
+            lines.add(
+                EnumChatFormatting.GRAY + "UUID: "
+                    + stack.getTagCompound()
+                        .getString("uuid"));
         }
     }
 
@@ -239,7 +259,7 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
 
     @Override
     public String[] getTraits() {
-        return new String[]{"cell"};
+        return new String[] { "cell" };
     }
 
     // AE
@@ -266,19 +286,19 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
     @Override
     public void setFuzzyMode(final ItemStack is, final FuzzyMode fzMode) {
         Platform.openNbtData(is)
-                .setString("FuzzyMode", fzMode.name());
+            .setString("FuzzyMode", fzMode.name());
     }
 
     @Override
     public String getOreFilter(ItemStack is) {
         return Platform.openNbtData(is)
-                       .getString("OreFilter");
+            .getString("OreFilter");
     }
 
     @Override
     public void setOreFilter(ItemStack is, String filter) {
         Platform.openNbtData(is)
-                .setString("OreFilter", filter);
+            .setString("OreFilter", filter);
     }
 
     @Override
@@ -289,8 +309,8 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
     @Override
     public long getBytesLong(ItemStack cellItem) {
         return Platform.openNbtData(cellItem)
-                       .getCompoundTag("InfiTool")
-                       .getInteger("TotalDurability") * 1024L;
+            .getCompoundTag("InfiTool")
+            .getInteger("TotalDurability") * BYTES_PER_DURABILITY;
     }
 
     @Override
@@ -343,8 +363,7 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
         }
 
         @Override
-        public InventoryHandler getCellInventory(ItemStack is, ISaveProvider host,
-                                                 StorageChannel channel) {
+        public InventoryHandler getCellInventory(ItemStack is, ISaveProvider host, StorageChannel channel) {
             if (channel == StorageChannel.ITEMS) {
                 return new InventoryHandler(new Inventory(is), channel);
             }
@@ -353,12 +372,13 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
 
         @Override
         public void openChestGui(EntityPlayer player, IChestOrDrive chest, ICellHandler cellHandler,
-                                 IMEInventoryHandler inv, ItemStack is, StorageChannel chan) {
+            IMEInventoryHandler inv, ItemStack is, StorageChannel chan) {
             Platform.openGUI(player, (TileEntity) chest, chest.getUp(), GuiBridge.GUI_ME);
         }
     }
 
-    private final static class InventoryHandler extends MEInventoryHandler<IAEItemStack> implements ICellInventoryHandler {
+    private final static class InventoryHandler extends MEInventoryHandler<IAEItemStack>
+        implements ICellInventoryHandler {
 
         private final Inventory inventory;
 
@@ -374,7 +394,8 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
 
         @Override
         public boolean isPreformatted() {
-            return !this.getPartitionList().isEmpty();
+            return !this.getPartitionList()
+                .isEmpty();
         }
 
         @Override
@@ -504,7 +525,7 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
             long types = 0;
             for (int i = 0; i < this.getTotalItemTypes(); i++) {
                 if (TiCStorageCell.INSTANCE.getConfigInventory(cellItem)
-                                           .getStackInSlot(i) != null) {
+                    .getStackInSlot(i) != null) {
                     types++;
                 }
             }
@@ -581,7 +602,10 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
         private void loadCellItems() {
             if (this.cellItems == null) {
                 if (!tagCompound.hasKey("uuid")) {
-                    tagCompound.setString("uuid", UUID.randomUUID().toString());
+                    tagCompound.setString(
+                        "uuid",
+                        UUID.randomUUID()
+                            .toString());
                 }
                 this.cellItems = StorageHandler.loadList(tagCompound.getString("uuid"));
             }
@@ -615,14 +639,18 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
             }
 
             if (!tagCompound.hasKey("uuid")) {
-                tagCompound.setString("uuid", UUID.randomUUID().toString());
+                tagCompound.setString(
+                    "uuid",
+                    UUID.randomUUID()
+                        .toString());
             }
 
             StorageHandler.saveList(tagCompound.getString("uuid"));
         }
 
         public long getRemainingItemTypes() {
-            final long basedOnStorage = this.getBytesPerType() == 0 ? Integer.MAX_VALUE : this.getFreeBytes() / this.getBytesPerType();
+            final long basedOnStorage = this.getBytesPerType() == 0 ? Integer.MAX_VALUE
+                : this.getFreeBytes() / this.getBytesPerType();
             final long baseOnTotal = this.getTotalItemTypes() - this.getStoredItemTypes();
 
             return Math.min(basedOnStorage, baseOnTotal);
@@ -635,11 +663,11 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
 
         private boolean isEmpty(final IMEInventory<IAEItemStack> meInventory) {
             return meInventory.getAvailableItems(
-                                  AEApi.instance()
-                                       .storage()
-                                       .createItemList(),
-                                  IterationCounter.fetchNewId())
-                              .isEmpty();
+                AEApi.instance()
+                    .storage()
+                    .createItemList(),
+                IterationCounter.fetchNewId())
+                .isEmpty();
         }
 
         public boolean canHoldNewItem() {
@@ -674,7 +702,7 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
             }
 
             final IAEItemStack l = this.getCellItems()
-                                       .findPrecise(input);
+                .findPrecise(input);
 
             if (l != null) {
                 long remainingItemSlots;
@@ -762,7 +790,7 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
 
         @Override
         public IAEItemStack extractItems(final IAEItemStack request, final Actionable mode,
-                                         final BaseActionSource src) {
+            final BaseActionSource src) {
             if (request == null) {
                 return null;
             }
@@ -772,7 +800,7 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
             IAEItemStack results = null;
 
             final IAEItemStack l = this.getCellItems()
-                                       .findPrecise(request);
+                .findPrecise(request);
 
             if (l != null) {
                 results = l.copy();
@@ -810,8 +838,7 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
 
         private void addXP(long stackSize) {
             size += stackSize;
-            if (size / 8 > 0)
-                LevelingLogic.addXP(cellItem, getFakePlayer(), size / 8);
+            if (size / 8 > 0) LevelingLogic.addXP(cellItem, getFakePlayer(), size / 8);
             size %= 8;
         }
     }

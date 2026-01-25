@@ -1,12 +1,14 @@
 package com.circulation.applied_tic.proxy;
 
+import net.minecraft.util.StatCollector;
+import net.minecraftforge.client.MinecraftForgeClient;
+
 import com.circulation.applied_tic.AppliedTiC;
 import com.circulation.applied_tic.registry.ItemRegistry;
+
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import net.minecraft.util.StatCollector;
-import net.minecraftforge.client.MinecraftForgeClient;
 import tconstruct.client.FlexibleToolRenderer;
 import tconstruct.library.client.TConstructClientRegistry;
 
@@ -36,12 +38,11 @@ public final class ClientProxy extends CommonProxy {
             2,
             0,
             0,
-            new int[]{1, 2, 13, 13},
-            new int[]{0, 0, 13, 13},
+            new int[] { 1, 2, 13, 13 },
+            new int[] { 0, 0, 13, 13 },
             StatCollector.translateToLocal("tool.ticstoragecell"),
             StatCollector.translateToLocal("tool.ticstoragecell.desc"),
             AppliedTiC.MODID,
-            "textures/gui/icons.png"
-        );
+            "textures/gui/icons.png");
     }
 }

@@ -1,15 +1,17 @@
 package com.circulation.applied_tic;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.circulation.applied_tic.handler.StorageHandler;
 import com.circulation.applied_tic.proxy.CommonProxy;
+
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStoppingEvent;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 @Mod(modid = AppliedTiC.MODID, version = Tags.VERSION, name = "Applied TiC", acceptedMinecraftVersions = "[1.7.10]")
 public class AppliedTiC {

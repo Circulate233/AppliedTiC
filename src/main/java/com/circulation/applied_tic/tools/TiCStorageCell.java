@@ -478,10 +478,12 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
             return 8;
         }
 
+        @Override
         public long getTotalBytes() {
             return TiCStorageCell.INSTANCE.getTotalTypes(cellItem);
         }
 
+        @Override
         public long getTotalItemTypes() {
             if (restrictionTypes > 0) return restrictionTypes;
             return this.getTotalBytes();
@@ -512,6 +514,7 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
             return INSTANCE.getUpgradesInventory(cellItem);
         }
 
+        @Override
         public int getBytesPerType() {
             return TiCStorageCell.INSTANCE.getBytesPerType(cellItem);
         }
@@ -520,6 +523,7 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
             return TiCStorageCell.INSTANCE.getBytesLong(cellItem);
         }
 
+        @Override
         public long getRemainingItemsCountDist(IAEItemStack l) {
             long remaining;
             long types = 0;
@@ -549,6 +553,7 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
             return remaining > 0 ? remaining : 0;
         }
 
+        @Override
         public int getUnusedItemCount() {
             final long div = this.getStoredItemCount() % getItemByteConsumption();
 
@@ -573,6 +578,7 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
             return this.getTotalBytes() - this.getUsedBytes();
         }
 
+        @Override
         public long getUsedBytes() {
             final long bytesForItemCount = (this.getStoredItemCount() + this.getUnusedItemCount())
                 / getItemByteConsumption();
@@ -580,6 +586,7 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
             return this.getStoredItemTypes() * this.getBytesPerType() + bytesForItemCount;
         }
 
+        @Override
         public long getRemainingItemCount() {
             if (restrictionLong > 0) {
                 return Math.min(
@@ -648,6 +655,7 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
             StorageHandler.saveList(tagCompound.getString("uuid"));
         }
 
+        @Override
         public long getRemainingItemTypes() {
             final long basedOnStorage = this.getBytesPerType() == 0 ? Integer.MAX_VALUE
                 : this.getFreeBytes() / this.getBytesPerType();
@@ -670,6 +678,7 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
                 .isEmpty();
         }
 
+        @Override
         public boolean canHoldNewItem() {
             final long bytesFree = this.getFreeBytes();
 

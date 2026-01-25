@@ -28,7 +28,7 @@ import appeng.util.Platform;
 import appeng.util.item.ItemList;
 import appeng.util.prioitylist.FuzzyPriorityList;
 import com.circulation.applied_tic.handler.StorageHandler;
-import com.circulation.applied_tic.handler.TiCCellHandler;
+import com.circulation.applied_tic.utils.TiCCellHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import lombok.Getter;
@@ -51,7 +51,6 @@ import tconstruct.tools.TinkerTools;
 import javax.annotation.Nullable;
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
@@ -181,14 +180,13 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
                 lines.add(GuiText.Sticky.getLocal());
             }
         }
-        List<Object> restricted = Arrays.asList(cellInventory.restrictionLong, cellInventory.restrictionTypes);
-        if (restricted != null && ((long) restricted.get(0) != 0 || (byte) restricted.get(1) != 0)) {
+        if (cellInventory.restrictionLong != 0 || cellInventory.restrictionTypes != 0) {
             lines.add(GuiText.Restricted.getLocal());
             if (GuiScreen.isShiftKeyDown()) {
                 NumberFormat nf = NumberFormat.getNumberInstance();
-                if ((long) restricted.get(0) != 0)
-                    lines.add(GuiText.MaxItems.getLocal() + " " + nf.format((long) restricted.get(0)));
-                if ((byte) restricted.get(1) != 0) lines.add(GuiText.MaxTypes.getLocal() + " " + restricted.get(1));
+                if (cellInventory.restrictionLong != 0)
+                    lines.add(GuiText.MaxItems.getLocal() + " " + nf.format(cellInventory.restrictionLong));
+                if (cellInventory.restrictionTypes != 0) lines.add(GuiText.MaxTypes.getLocal() + " " + cellInventory.restrictionTypes);
             }
         }
         if (stack.hasTagCompound() && stack.getTagCompound().hasKey("uuid")) {

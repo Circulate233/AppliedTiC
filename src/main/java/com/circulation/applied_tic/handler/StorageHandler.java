@@ -57,8 +57,7 @@ public class StorageHandler {
         final var cellItems = cellItemsPair.right();
 
         if (!saveCell(uuid, cellItemsPair)) {
-
-            synchronized (cellItems) {
+            synchronized (cellItemsPair) {
                 cellItems.resetStatus();
                 try {
                     var data = CompressedStreamTools.read(new File(getCellsFlie(), uuid + ".dat"));
@@ -99,21 +98,26 @@ public class StorageHandler {
                 try {
                     CompressedStreamTools.safeWrite(store, new File(getCellsFlie(), uuid + ".dat"));
                     return true;
-                } catch (IOException e) {
-                    e.printStackTrace(System.err);
+                } catch (IOException ignored) {
+
                 }
             }
             return false;
         }
     }
 
-    public void onWorldSave(WorldEvent.Save event) {
+    public static void saveAllCells() {
         synchronized (cellItemsManager) {
-            if (!canSave || event.world.isRemote) return;
+            if (!canSave) return;
             canSave = false;
             for (var entry : cellItemsManager.object2ObjectEntrySet()) {
                 saveCell(entry.getKey(), entry.getValue());
             }
         }
+    }
+
+    public void onWorldSave(WorldEvent.Save event) {
+        if (event.world.isRemote) return;
+        saveAllCells();
     }
 }

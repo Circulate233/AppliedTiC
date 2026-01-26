@@ -13,7 +13,7 @@ public class TiCPattern extends Pattern {
     private static final String[] patternName = new String[] { "housing", "core", "part" };
 
     public TiCPattern() {
-        super(patternName, getPatternNames(), "patterns");
+        super(patternName, getPatternNames(), "patterns/");
         setUnlocalizedName("pattern");
     }
 

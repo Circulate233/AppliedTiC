@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 
+import cpw.mods.fml.common.FMLCommonHandler;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -17,6 +18,7 @@ import appeng.api.AEApi;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.storage.data.IItemList;
 import appeng.util.item.AEItemStack;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import it.unimi.dsi.fastutil.booleans.BooleanObjectMutablePair;
 import it.unimi.dsi.fastutil.booleans.BooleanObjectPair;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
@@ -27,14 +29,14 @@ public final class StorageHandler {
 
     public static final StorageHandler INSTANCE = new StorageHandler();
     private static final Object2ObjectMap<String, BooleanObjectPair<IItemList<IAEItemStack>>> cellItemsManager = new Object2ObjectOpenHashMap<>();
-    public static boolean canSave;
+    private static boolean canSave;
     private static File cellsFlie;
 
     private StorageHandler() {
-
+        FMLCommonHandler.instance().bus().register(this);
     }
 
-    public static File getCellsFlie() {
+    private static File getCellsFlie() {
         if (cellsFlie == null) {
             var path = DimensionManager.getWorld(0)
                 .getSaveHandler()
@@ -131,6 +133,7 @@ public final class StorageHandler {
         }
     }
 
+    @SubscribeEvent
     public void onWorldSave(WorldEvent.Save event) {
         if (event.world.isRemote) return;
         saveAllCells();

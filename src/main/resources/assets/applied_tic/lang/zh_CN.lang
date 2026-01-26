@@ -3,3 +3,4 @@ tool.ticstoragecell.desc=TiC存储元件是一种可自定义的ME存储元件�
 
 toolpart.core=%%material存储核心
 toolpart.housing=%%material存储外壳
+toolpart.part=%%material

@@ -1,4 +1,4 @@
-package com.circulation.applied_tic.tools;
+package com.circulation.applied_tic.items;
 
 import static appeng.me.storage.CellInventory.getCell;
 
@@ -24,6 +24,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.common.util.FakePlayerFactory;
 
@@ -67,7 +68,6 @@ import tconstruct.library.tools.ToolCore;
 
 public class TiCStorageCell extends ToolCore implements IStorageCell {
 
-    public static long BYTES_PER_DURABILITY = 1024L;
     public static final TiCStorageCell INSTANCE = new TiCStorageCell();
     private static final Handler handler = new Handler();
     @Getter(lazy = true)
@@ -90,7 +90,7 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
 
     @Override
     public int getPartAmount() {
-        return 2;
+        return super.getPartAmount();
     }
 
     @Override
@@ -109,6 +109,7 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
         return false;
     }
 
+    // TODO：显示可用的特性，以及按下shift时显示组成部件
     @Override
     @SideOnly(Side.CLIENT)
     public void addInformation(ItemStack stack, EntityPlayer player, List<String> lines, boolean advanced) {
@@ -227,6 +228,7 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
     public String getIconSuffix(int partType) {
         return switch (partType) {
             case 0 -> "_me_cell_housing";
+            case 1 -> "_me_cell_part";
             case 2 -> "_me_cell_core";
             default -> "";
         };
@@ -249,7 +251,7 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
 
     @Override
     public Item getAccessoryItem() {
-        return null;
+        return ItemRegistry.part;
     }
 
     @Override
@@ -310,7 +312,16 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
     public long getBytesLong(ItemStack cellItem) {
         return Platform.openNbtData(cellItem)
             .getCompoundTag("InfiTool")
-            .getInteger("TotalDurability") * BYTES_PER_DURABILITY;
+            .getInteger("TotalDurability") * getByteMultiolier(cellItem);
+    }
+
+    public long getByteMultiolier(ItemStack cellItem) {
+        if (cellItem == null) return 0;
+        if (!cellItem.hasTagCompound()) return 0;
+        var tag = cellItem.getTagCompound();
+        if (!tag.hasKey("InfiTool", Constants.NBT.TAG_COMPOUND)) return 0;
+        return tag.getCompoundTag("InfiTool")
+            .getLong("byteMultiolier");
     }
 
     @Override

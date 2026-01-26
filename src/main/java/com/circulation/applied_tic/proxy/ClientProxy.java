@@ -32,6 +32,7 @@ public final class ClientProxy extends CommonProxy {
         /*
          * xButton与yButton 以256x256贴图左上角作为原点，18x18切分一次，x和y从左到右从上到下对应位置，从0开始
          * 数组同理，4个按钮对应0123位置，分别为X和Y数组，皆为13时认为这个格子不被需要从而放置在左边
+         * 为什么4个按钮的纹理固定使用匠魂自己的？
          * slotType为格子排布方法 ToolForgeGui#setSlotType
          */
         TConstructClientRegistry.addTierTwoButton(

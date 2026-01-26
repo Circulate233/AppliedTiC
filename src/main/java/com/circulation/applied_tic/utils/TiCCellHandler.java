@@ -3,7 +3,7 @@ package com.circulation.applied_tic.utils;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 
-import com.circulation.applied_tic.tools.TiCStorageCell;
+import com.circulation.applied_tic.items.TiCStorageCell;
 
 import appeng.api.storage.ICellHandler;
 import appeng.api.storage.IMEInventory;

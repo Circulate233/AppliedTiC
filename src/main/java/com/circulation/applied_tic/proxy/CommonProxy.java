@@ -2,24 +2,33 @@ package com.circulation.applied_tic.proxy;
 
 import static com.circulation.applied_tic.registry.ItemRegistry.itemCell;
 
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 
 import com.circulation.applied_tic.Config;
+import com.circulation.applied_tic.handler.PartHandler;
 import com.circulation.applied_tic.handler.StorageHandler;
+import com.circulation.applied_tic.items.TiCStorageCell;
+import com.circulation.applied_tic.part.MEPartMaterial;
 import com.circulation.applied_tic.registry.ItemRegistry;
-import com.circulation.applied_tic.tools.TiCStorageCell;
 
 import appeng.api.AEApi;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import tconstruct.library.TConstructRegistry;
+import tconstruct.library.crafting.PatternBuilder;
+import tconstruct.library.crafting.StencilBuilder;
 
 public class CommonProxy {
 
     public void preInit(FMLPreInitializationEvent event) {
         Config.synchronizeConfiguration(event.getSuggestedConfigurationFile());
         ItemRegistry.preInit();
+        PatternBuilder.instance.addToolPattern(ItemRegistry.pattern);
+        StencilBuilder.registerStencil(704, new ItemStack(ItemRegistry.pattern));
+        StencilBuilder.registerStencil(705, new ItemStack(ItemRegistry.pattern, 1, 1));
+        StencilBuilder.registerStencil(706, new ItemStack(ItemRegistry.pattern, 1, 2));
         TConstructRegistry.addItemToDirectory("TiC Storage Cell", itemCell);
     }
 
@@ -28,10 +37,15 @@ public class CommonProxy {
             .registries()
             .cell()
             .addCellHandler(TiCStorageCell.getCellHandler());
-        TConstructRegistry.addToolRecipe(itemCell, itemCell.getHeadItem(), itemCell.getHandleItem());
+        TConstructRegistry
+            .addToolRecipe(itemCell, itemCell.getHeadItem(), itemCell.getHandleItem(), itemCell.getAccessoryItem());
+        for (var i : MEPartMaterial.CellParts.values()) {
+            TConstructRegistry.addCustomMaterial(MEPartMaterial.createMaterial(2, i, ItemRegistry.part));
+        }
     }
 
     public void postInit(FMLPostInitializationEvent event) {
         MinecraftForge.EVENT_BUS.register(StorageHandler.INSTANCE);
+        MinecraftForge.EVENT_BUS.register(PartHandler.INSTANCE);
     }
 }

@@ -14,7 +14,9 @@ public final class PartHandler {
     public static final PartHandler INSTANCE = new PartHandler();
 
     private PartHandler() {
-        FMLCommonHandler.instance().bus().register(this);
+        FMLCommonHandler.instance()
+            .bus()
+            .register(this);
     }
 
     @SubscribeEvent

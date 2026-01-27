@@ -4,3 +4,7 @@ tool.ticstoragecell.desc=The TiC Storage Cell is a customizable ME storage cell.
 toolpart.core=%%material Storage Core
 toolpart.housing=%%material Storage Housing
 toolpart.part=%%material
+
+item.pattern.core.name=Storage Core Pattern
+item.pattern.housing.name=Storage Housing Pattern
+item.pattern.part.name=Storage Part Pattern

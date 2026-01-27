@@ -29,7 +29,6 @@ public final class ItemRegistry {
         GameRegistry.registerItem(pattern = new TiCPattern(), "pattern");
         GameRegistry
             .registerItem(part = new DynamicToolPart("_me_cell_part", "part", AppliedTiC.MODID, MEPartMaterial.class) {
-
                 @SuppressWarnings("unchecked")
                 @Override
                 @SideOnly(Side.CLIENT)
@@ -37,6 +36,11 @@ public final class ItemRegistry {
                     for (int i : MEPartMaterial.getAllToolPartMaterialID()) {
                         list.add(new ItemStack(item, 1, i));
                     }
+                }
+
+                @Override
+                public int getMaterialID(ItemStack stack) {
+                    return stack.getItemDamage();
                 }
             }, "me_cell_part");
         GameRegistry.registerItem(

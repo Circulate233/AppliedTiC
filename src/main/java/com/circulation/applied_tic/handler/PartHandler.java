@@ -5,8 +5,6 @@ import com.circulation.applied_tic.registry.ItemRegistry;
 
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import tconstruct.library.TConstructRegistry;
-import tconstruct.library.event.PartBuilderEvent;
 import tconstruct.library.event.ToolCraftEvent;
 
 public final class PartHandler {
@@ -19,13 +17,13 @@ public final class PartHandler {
             .register(this);
     }
 
-    @SubscribeEvent
-    public void onPartBuilder(PartBuilderEvent.NormalPart event) {
-        if (event.pattern.getItem() != ItemRegistry.pattern || event.pattern.getItemDamage() != 2) return;
-        var e = TConstructRegistry.getCustomMaterial(event.material, MEPartMaterial.class);
-        if (e == null) return;
-        event.overrideResult(new net.minecraft.item.ItemStack[] { e.craftingItem.copy(), null });
-    }
+    // @SubscribeEvent
+    // public void onPartBuilder(PartBuilderEvent.NormalPart event) {
+    // if (event.pattern.getItem() != ItemRegistry.pattern || event.pattern.getItemDamage() != 2) return;
+    // var e = TConstructRegistry.getCustomMaterial(event.material, MEPartMaterial.class);
+    // if (e == null) return;
+    // event.overrideResult(new net.minecraft.item.ItemStack[] { e.craftingItem.copy(), null });
+    // }
 
     @SubscribeEvent
     public void onToolCraft(ToolCraftEvent.NormalTool event) {

@@ -2,6 +2,8 @@ package com.circulation.applied_tic.proxy;
 
 import static com.circulation.applied_tic.registry.ItemRegistry.itemCell;
 
+import java.util.Collections;
+
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 
@@ -13,6 +15,7 @@ import com.circulation.applied_tic.part.MEPartMaterial;
 import com.circulation.applied_tic.registry.ItemRegistry;
 
 import appeng.api.AEApi;
+import appeng.api.features.InscriberProcessType;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
@@ -39,8 +42,20 @@ public class CommonProxy {
             .addCellHandler(TiCStorageCell.getCellHandler());
         TConstructRegistry
             .addToolRecipe(itemCell, itemCell.getHeadItem(), itemCell.getHandleItem(), itemCell.getAccessoryItem());
+        var inscriber = AEApi.instance()
+            .registries()
+            .inscriber();
+        var pattern = new ItemStack(ItemRegistry.pattern, 1, 2);
         for (var i : MEPartMaterial.CellParts.values()) {
-            TConstructRegistry.addCustomMaterial(MEPartMaterial.createMaterial(2, i, ItemRegistry.part));
+            var m = MEPartMaterial.createMaterial(2, i, ItemRegistry.part);
+            TConstructRegistry.addCustomMaterial(m);
+            inscriber.addRecipe(
+                inscriber.builder()
+                    .withProcessType(InscriberProcessType.Inscribe)
+                    .withInputs(Collections.singletonList(i.getMaterial()))
+                    .withOutput(m.craftingItem)
+                    .withTopOptional(pattern)
+                    .build());
         }
     }
 

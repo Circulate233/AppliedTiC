@@ -3,7 +3,7 @@ plugins {
 }
 
 minecraft {
-    extraRunJvmArguments.addAll("-Xmx4G", "-Xms4G", "-XX:+UseZGC", "-XX:+UseCompactObjectHeaders")
+    extraRunJvmArguments.addAll("-Xmx4G", "-Xms4G")
 }
 
 dependencies {

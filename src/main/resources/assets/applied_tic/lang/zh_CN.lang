@@ -5,6 +5,6 @@ toolpart.core=%%material存储核心
 toolpart.housing=%%material存储外壳
 toolpart.part=%%material
 
-item.pattern.core.name=存储核心模具
-item.pattern.housing.name=存储外壳模具
-item.pattern.part.name=存储组件模具
+item.pattern.core.name=存储核心铸模
+item.pattern.housing.name=存储外壳铸模
+item.pattern.part.name=存储组件铸模

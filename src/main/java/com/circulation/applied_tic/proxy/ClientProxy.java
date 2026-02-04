@@ -36,11 +36,11 @@ public final class ClientProxy extends CommonProxy {
          * slotType为格子排布方法 ToolForgeGui#setSlotType
          */
         TConstructClientRegistry.addTierTwoButton(
-            2,
+            9,
             0,
             0,
-            new int[] { 1, 2, 13, 13 },
-            new int[] { 0, 0, 13, 13 },
+            new int[] { 1, 2, 3, 4 },
+            new int[] { 0, 0, 0, 0 },
             StatCollector.translateToLocal("tool.ticstoragecell"),
             StatCollector.translateToLocal("tool.ticstoragecell.desc"),
             AppliedTiC.MODID,

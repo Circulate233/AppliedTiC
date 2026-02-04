@@ -29,6 +29,7 @@ import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.common.util.FakePlayerFactory;
 
 import com.circulation.applied_tic.handler.StorageHandler;
+import com.circulation.applied_tic.part.MEPartMaterial;
 import com.circulation.applied_tic.registry.ItemRegistry;
 import com.circulation.applied_tic.utils.TiCCellHandler;
 import com.mojang.authlib.GameProfile;
@@ -64,6 +65,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import iguanaman.iguanatweakstconstruct.leveling.LevelingLogic;
 import lombok.Getter;
+import tconstruct.library.crafting.ToolBuilder;
 import tconstruct.library.tools.ToolCore;
 
 public class TiCStorageCell extends ToolCore implements IStorageCell {
@@ -109,10 +111,18 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
         return false;
     }
 
-    // TODO：显示可用的特性，以及按下shift时显示组成部件
     @Override
     @SideOnly(Side.CLIENT)
-    public void addInformation(ItemStack stack, EntityPlayer player, List<String> lines, boolean advanced) {
+    public void addInformation(ItemStack stack, EntityPlayer player, List<String> list, boolean advanced) {
+        if (!stack.hasTagCompound()) return;
+
+        NBTTagCompound tags = stack.getTagCompound();
+
+        if (tags.hasKey("InfiTool")) {
+            // TODO:不显示特性，直到完成元件专用的特性支持
+
+        }
+
         final var inventory = AEApi.instance()
             .registries()
             .cell()
@@ -124,7 +134,7 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
 
         final var cellInventory = cellHandler.inventory;
 
-        lines.add(
+        list.add(
             EnumChatFormatting.WHITE + NumberFormat.getInstance(Locale.ENGLISH)
                 .format(cellInventory.getUsedBytes())
                 + EnumChatFormatting.GRAY
@@ -138,7 +148,7 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
                 + EnumChatFormatting.GRAY
                 + GuiText.BytesUsed.getLocal());
 
-        lines.add(
+        list.add(
             EnumChatFormatting.WHITE + NumberFormat.getInstance(Locale.ENGLISH)
                 .format(cellInventory.getStoredItemTypes())
                 + EnumChatFormatting.GRAY
@@ -156,19 +166,20 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
             ItemStack itemStack = cellInventory.getAvailableItems(new ItemList(), IterationCounter.fetchNewId())
                 .getFirstItem()
                 .getItemStack();
-            lines.add(GuiText.Contains.getLocal() + ": " + itemStack.getDisplayName());
+            list.add(GuiText.Contains.getLocal() + ": " + itemStack.getDisplayName());
         }
 
         if (cellHandler.isPreformatted()) {
             String filter = getOreFilter(stack);
             if (filter.isEmpty()) {
-                final String list = (cellHandler.getIncludeExcludeMode() == IncludeExclude.WHITELIST ? GuiText.Included
+                final String include = (cellHandler.getIncludeExcludeMode() == IncludeExclude.WHITELIST
+                    ? GuiText.Included
                     : GuiText.Excluded).getLocal();
 
                 if (cellHandler.isFuzzy()) {
-                    lines.add(GuiText.Partitioned.getLocal() + " - " + list + ' ' + GuiText.Fuzzy.getLocal());
+                    list.add(GuiText.Partitioned.getLocal() + " - " + include + ' ' + GuiText.Fuzzy.getLocal());
                 } else {
-                    lines.add(GuiText.Partitioned.getLocal() + " - " + list + ' ' + GuiText.Precise.getLocal());
+                    list.add(GuiText.Partitioned.getLocal() + " - " + include + ' ' + GuiText.Precise.getLocal());
                 }
                 if (GuiScreen.isShiftKeyDown()) {
                     int usedFilters = 0;
@@ -182,7 +193,7 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
                             filtersTexts.add(s.getDisplayName());
                         }
                     }
-                    lines.add(
+                    list.add(
                         GuiText.Filter.getLocal() + " ("
                             + usedFilters
                             + "/"
@@ -192,31 +203,31 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
                             + ": ");
 
                     if (!filtersTexts.isEmpty()) {
-                        lines.addAll(filtersTexts);
+                        list.addAll(filtersTexts);
                     }
 
                 }
             } else {
-                lines.add(GuiText.PartitionedOre.getLocal() + " : " + filter);
+                list.add(GuiText.PartitionedOre.getLocal() + " : " + filter);
             }
 
             if (cellHandler.getSticky()) {
-                lines.add(GuiText.Sticky.getLocal());
+                list.add(GuiText.Sticky.getLocal());
             }
         }
         if (cellInventory.restrictionLong != 0 || cellInventory.restrictionTypes != 0) {
-            lines.add(GuiText.Restricted.getLocal());
+            list.add(GuiText.Restricted.getLocal());
             if (GuiScreen.isShiftKeyDown()) {
                 NumberFormat nf = NumberFormat.getNumberInstance();
                 if (cellInventory.restrictionLong != 0)
-                    lines.add(GuiText.MaxItems.getLocal() + " " + nf.format(cellInventory.restrictionLong));
+                    list.add(GuiText.MaxItems.getLocal() + " " + nf.format(cellInventory.restrictionLong));
                 if (cellInventory.restrictionTypes != 0)
-                    lines.add(GuiText.MaxTypes.getLocal() + " " + cellInventory.restrictionTypes);
+                    list.add(GuiText.MaxTypes.getLocal() + " " + cellInventory.restrictionTypes);
             }
         }
         if (stack.hasTagCompound() && stack.getTagCompound()
             .hasKey("uuid")) {
-            lines.add(
+            list.add(
                 EnumChatFormatting.GRAY + "UUID: "
                     + stack.getTagCompound()
                         .getString("uuid"));
@@ -232,6 +243,23 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
             case 2 -> "_me_cell_core";
             default -> "";
         };
+    }
+
+    public void buildTool(int id, String name, List<ItemStack> list) {
+        Item extra = getExtraItem();
+        ItemStack extraStack = extra != null ? new ItemStack(extra, 1, id) : null;
+        ItemStack tool = ToolBuilder.instance.buildTool(
+            new ItemStack(getHeadItem(), 1, id),
+            new ItemStack(getHandleItem(), 1, id),
+            new ItemStack(getAccessoryItem(), 1, MEPartMaterial.CellParts.K16384.ordinal() + MEPartMaterial.startID),
+            extraStack,
+            name);
+        if (tool != null) {
+            tool.getTagCompound()
+                .getCompoundTag("InfiTool")
+                .setBoolean("Built", true);
+            list.add(tool);
+        }
     }
 
     @Override

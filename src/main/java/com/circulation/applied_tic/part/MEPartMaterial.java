@@ -52,14 +52,14 @@ public class MEPartMaterial extends CustomMaterial {
 
     public enum CellParts implements IPartMaterial {
 
-        K1(materials.cell1kPart(), 1),
-        K4(materials.cell4kPart(), 4),
-        K16(materials.cell16kPart(), 16),
-        K64(materials.cell64kPart(), 64),
-        K256(materials.cell256kPart(), 256),
-        K1024(materials.cell1024kPart(), 1024),
-        K4096(materials.cell4096kPart(), 4096),
-        K16384(materials.cell16384kPart(), 16384),;
+        K1(materials.cell1kPart(), 128),
+        K4(materials.cell4kPart(), 256),
+        K16(materials.cell16kPart(), 384),
+        K64(materials.cell64kPart(), 576),
+        K256(materials.cell256kPart(), 864),
+        K1024(materials.cell1024kPart(), 1296),
+        K4096(materials.cell4096kPart(), 1944),
+        K16384(materials.cell16384kPart(), 3072),;
 
         private final ItemStack item;
         @Getter

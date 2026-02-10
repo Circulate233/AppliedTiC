@@ -251,7 +251,7 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
         ItemStack tool = ToolBuilder.instance.buildTool(
             new ItemStack(getHeadItem(), 1, id),
             new ItemStack(getHandleItem(), 1, id),
-            new ItemStack(getAccessoryItem(), 1, MEPartMaterial.CellParts.K16384.ordinal() + MEPartMaterial.startID),
+            new ItemStack(getAccessoryItem(), 1, MEPartMaterial.CellParts.K256.ordinal() + MEPartMaterial.startID),
             extraStack,
             name);
         if (tool != null) {
@@ -332,15 +332,14 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
     }
 
     @Override
+    @Deprecated
     public int getBytes(ItemStack cellItem) {
         return 0;
     }
 
     @Override
     public long getBytesLong(ItemStack cellItem) {
-        return Platform.openNbtData(cellItem)
-            .getCompoundTag("InfiTool")
-            .getInteger("TotalDurability") * getByteMultiolier(cellItem);
+        return getNbtTagCompound(cellItem).getInteger("totalByte") * getByteMultiolier(cellItem);
     }
 
     public long getByteMultiolier(ItemStack cellItem) {
@@ -348,11 +347,16 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
         if (!cellItem.hasTagCompound()) return 0;
         var tag = cellItem.getTagCompound();
         if (!tag.hasKey("InfiTool", Constants.NBT.TAG_COMPOUND)) return 0;
-        return tag.getCompoundTag("InfiTool")
-            .getLong("byteMultiolier");
+        return getNbtTagCompound(cellItem).getLong("byteMultiolier");
+    }
+
+    public final NBTTagCompound getNbtTagCompound(ItemStack cellItem) {
+        return Platform.openNbtData(cellItem)
+            .getCompoundTag("InfiTool");
     }
 
     @Override
+    @Deprecated
     public int BytePerType(ItemStack cellItem) {
         return getBytesPerType(cellItem);
     }
@@ -366,7 +370,7 @@ public class TiCStorageCell extends ToolCore implements IStorageCell {
     // TODO:最大类型？
     @Override
     public int getTotalTypes(ItemStack cellItem) {
-        return damageVsEntity;
+        return getNbtTagCompound(cellItem).getInteger("totalTypes");
     }
 
     @Override

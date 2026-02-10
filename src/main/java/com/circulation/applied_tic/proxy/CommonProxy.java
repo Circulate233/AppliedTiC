@@ -8,7 +8,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 
 import com.circulation.applied_tic.Config;
-import com.circulation.applied_tic.handler.PartHandler;
+import com.circulation.applied_tic.handler.BuildHandler;
 import com.circulation.applied_tic.handler.StorageHandler;
 import com.circulation.applied_tic.items.TiCStorageCell;
 import com.circulation.applied_tic.part.MEPartMaterial;
@@ -61,6 +61,6 @@ public class CommonProxy {
 
     public void postInit(FMLPostInitializationEvent event) {
         MinecraftForge.EVENT_BUS.register(StorageHandler.INSTANCE);
-        MinecraftForge.EVENT_BUS.register(PartHandler.INSTANCE);
+        MinecraftForge.EVENT_BUS.register(BuildHandler.INSTANCE);
     }
 }

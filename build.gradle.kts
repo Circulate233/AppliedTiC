@@ -3,7 +3,13 @@ plugins {
 }
 
 minecraft {
-    extraRunJvmArguments.addAll("-Xmx4G", "-Xms4G")
+    extraRunJvmArguments.addAll(
+        "-Xmx4G",
+        "-Xms4G",
+        "-XX:+UseShenandoahGC",
+        "-XX:ShenandoahGCMode=generational",
+        "-XX:+UseCompactObjectHeaders"
+    )
 }
 
 dependencies {

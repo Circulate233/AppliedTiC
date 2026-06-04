@@ -44,7 +44,6 @@ public final class BuildHandler {
             return baseType * 10;
         } else if (baseType < 32) {
             return baseType * 8;
-        } else
-            return baseType * 6;
+        } else return baseType * 6;
     }
 }

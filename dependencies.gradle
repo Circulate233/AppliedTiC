@@ -1,16 +1,19 @@
 dependencies {
-    implementation('com.github.GTNewHorizons:AE2FluidCraft-Rework:1.4.120-gtnh:dev') {
+    implementation('com.github.GTNewHorizons:AE2FluidCraft-Rework:1.5.85-gtnh:dev') {
         exclude group: 'com.github.GTNewHorizons', module: 'Applied-Energistics-2-Unofficial'
     }
-    api('com.github.GTNewHorizons:Applied-Energistics-2-Unofficial:rv3-beta-695-GTNH:dev')
-    api('com.github.GTNewHorizons:CodeChickenCore:1.4.10:dev')
-    implementation("com.github.GTNewHorizons:TinkersConstruct:1.13.57-GTNH:dev")
-    implementation("com.github.GTNewHorizons:NotEnoughItems:2.8.44-GTNH:dev")
-    implementation("com.github.GTNewHorizons:NotEnoughEnergistics:1.7.14:dev")
-    implementation('com.github.GTNewHorizons:GTNHLib:0.7.10:dev')
-    implementation("com.github.GTNewHorizons:IguanaTweaksTConstruct:2.7.0:dev")
+    api('com.github.GTNewHorizons:Applied-Energistics-2-Unofficial:rv3-beta-959-GTNH:dev')
+    api('com.github.GTNewHorizons:CodeChickenCore:1.4.13:dev')
+    implementation("com.github.GTNewHorizons:TinkersConstruct:1.14.73-GTNH:dev")
+    implementation("com.github.GTNewHorizons:NotEnoughItems:2.8.99-GTNH:dev")
+    implementation("com.github.GTNewHorizons:NotEnoughEnergistics:1.7.29:dev")
+    implementation('com.github.GTNewHorizons:GTNHLib:0.10.3:dev')
+    implementation("com.github.GTNewHorizons:IguanaTweaksTConstruct:2.7.6:dev")
 
-    runtimeOnlyNonPublishable('com.github.GTNewHorizons:ServerUtilities:2.2.2:dev')
+    implementation("thaumcraft:Thaumcraft:1.7.10-4.2.3.5:dev")
+    implementation("com.github.GTNewHorizons:ThaumicEnergistics:1.7.51-GTNH:dev")
+
+    runtimeOnlyNonPublishable('com.github.GTNewHorizons:ServerUtilities:2.2.34:dev')
     runtimeOnlyNonPublishable(rfg.deobf("curse.maven:spark-361579:4271867"))
 
     implementation('com.google.auto.value:auto-value-annotations:1.10.4')
@@ -19,8 +22,8 @@ dependencies {
 
 configurations.all {
     resolutionStrategy {
-        force "com.github.GTNewHorizons:GTNHLib:0.7.10"
-        force "com.github.GTNewHorizons:Baubles-Expanded:2.1.15-GTNH"
+        force "com.github.GTNewHorizons:GTNHLib:0.10.3"
+        force "com.github.GTNewHorizons:Baubles-Expanded:2.2.21-GTNH"
     }
     exclude group: 'com.github.GTNewHorizons', module: 'CodeChickenLib'
     exclude group: 'com.github.GTNewHorizons', module: 'Hodgepodge'
